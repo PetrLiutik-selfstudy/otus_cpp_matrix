@@ -17,7 +17,7 @@ struct gen_tuple_t<1, T> {
   using type = std::tuple<T>;
 };
 
-template<typename T, T default_val, size_t N>
+template<typename T, T default_val, size_t N = 2>
 class matrix {
     using index_t = typename gen_tuple_t<N, size_t>::type;
 
@@ -28,7 +28,7 @@ class matrix {
         return arr;
       }
 
-      size_t operator()(const index_t& tuple) const {
+      size_t operator() (const index_t& tuple) const {
         size_t seed = 0;
         // boost hash_combine.
         for(auto it: t2a(tuple, std::make_index_sequence<N>{}))
@@ -45,7 +45,7 @@ class matrix {
         matrix_proxy(storage_t& storage, const F& index) : storage_{storage}, index_{index} {
         }
 
-        auto operator[](size_t elem_ind) {
+        auto operator [] (size_t elem_ind) {
           auto nextIndex = std::tuple_cat(index_, std::make_tuple(elem_ind));
           return matrix_proxy<decltype(nextIndex), ind - 1>{storage_, nextIndex};
         }
@@ -82,6 +82,8 @@ class matrix {
 
   public:
 
+    using index_val_t = typename gen_tuple_t<N + 1, size_t>::type;
+
     matrix() = default;
 
 //    explicit matrix(size_type size) : size_(size), capacity_(size) {
@@ -98,12 +100,22 @@ class matrix {
 //        storage_->construct(&data_[i], value);
 //    }
 
-//    matrix(const std::initializer_list<T>& mat) : size_(mat.size()), capacity_(mat.size()) {
-//      storage_ = std::make_unique<storage_type>();
-//      data_ = storage_->allocate(size_);
-//      for(size_type i = 0; i < mat.size(); ++i)
-//        storage_->construct(&data_[i], *(mat.begin() + i));
-//    }
+    template <size_t... Indices>
+    auto t_cut(const index_t& tuple, std::index_sequence<Indices...>) const {
+      auto cut_tuple = std::make_tuple(std::get<Indices>(tuple)...);
+      return cut_tuple;
+    }
+
+
+    matrix(const std::initializer_list<index_val_t>& list) {
+      for(const auto& it: list) {
+        auto index = t_cut(it, std::make_index_sequence<N>{});
+        auto value = std::get<N>(it);
+        if(value != default_val) {
+          storage_[index] = value;
+        }
+      }
+    }
 
     matrix(const matrix& mat) = default;
 
@@ -128,18 +140,69 @@ class matrix {
       std::swap(storage_, other.storage_);
     }
 
-    auto operator[] (size_t elem_ind) {
+    auto operator [] (size_t elem_ind) {
       auto index = std::make_tuple(elem_ind);
       return matrix_proxy<decltype (index), N - 1>{storage_, index};
     }
 
-    auto operator[] (size_t elem_ind) const {
+    auto operator [] (size_t elem_ind) const {
       auto index = std::make_tuple(elem_ind);
       return matrix_proxy<decltype (index), N - 1>{storage_, index};
     }
 
     size_t size() {
       return storage_.size();
+    }
+
+    using storage_iterator_t = typename storage_t::iterator;
+
+    struct iterator : std::iterator<std::bidirectional_iterator_tag, storage_iterator_t> {
+        explicit iterator(storage_iterator_t it) : current_{it} {}
+
+        iterator& operator ++() {
+          current_++;
+          return *this;
+        }
+
+        iterator operator ++(int) {
+          iterator temp = *this;
+          current_++;
+          return temp;
+        }
+
+        iterator& operator --() {
+          current_--;
+          return *this;
+        }
+
+        iterator operator --(int) {
+          iterator temp = *this;
+          current_--;
+          return temp;
+        }
+
+        auto operator *() {
+          return std::tuple_cat((*current_).first, std::make_tuple((*current_).second));
+        }
+
+        bool operator == (iterator &other) {
+          return current_ == other.current_;
+        }
+
+        bool operator != (iterator &other) {
+          return !(*this == other);
+        }
+
+    private:
+        storage_iterator_t current_{};
+    };
+
+    iterator begin() {
+      return iterator(storage_.begin());
+    }
+
+    iterator end() {
+      return iterator(storage_.end());
     }
 
   private:
@@ -154,33 +217,44 @@ int main()
             << ver_patch() << std::endl;
 
 
-  using mat_t = matrix<int, 0, 2>;
+  using mat_t = matrix<int, 0, 3>;
   mat_t mat;
 
 ////  auto index = std::make_tuple<int, int>(1, 1);
 
-//  mat_t::ind_t ind{{1, 1, 1, 2, 2}};
-//  int val = 5;
 //  mat.set(ind, val);
 
-//  mat[1][2][3][4][5] = val;
+  mat[1][2][3] = 5;
+  mat[100][500][0] = 1200;
+
+//  mat_t mat1{std::make_tuple<int, int, int, int>(1, 2, 3, 4)};
 
 ////  std::cout << mat.get(ind) << std::endl;
 //  std::cout << mat[1][2][3][4][5] << std::endl;
 
 
-  for(auto i = 0; i < 10; ++i) {
-      mat[i][i] = i;
-      mat[i][9 - i] = i;
+//  for(auto i = 0; i < 10; ++i) {
+//      mat[i][i] = i;
+//      mat[i][9 - i] = i;
+//  }
+
+//  ((mat[4][4] = 314) = 0) = 9;
+
+//  for(auto i = 1; i < 9; ++i) {
+//      for(auto j = 1; j < 9; ++j)
+//          std::cout << mat[i][j] << " ";
+//      std::cout << std::endl;
+//  }
+
+  for(auto it: mat) {
+    int x;
+    int y;
+    int z;
+    int v;
+    std::tie(x, y, z, v) = it;
+    std::cout << x << y << z << v << std::endl;
   }
 
-  ((mat[1][1] = 314) = 0) = 3;
-
-  for(auto i = 1; i < 9; ++i) {
-      for(auto j = 1; j < 9; ++j)
-          std::cout << mat[i][j] << " ";
-      std::cout << std::endl;
-  }
 
   std::cout << mat.size() << std::endl;
 
