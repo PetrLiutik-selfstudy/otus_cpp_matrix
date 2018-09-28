@@ -2,21 +2,9 @@
 
 #include "../inc/ver.h"
 
-
-#include <unordered_map>
-#include <tuple>
 #include <array>
-#include <memory>
-
-//template <size_t ind, typename T, typename... Tail>
-//struct gen_tuple_t {
-//  using type = typename gen_tuple_t<ind - 1, T, T, Tail...>::type;
-//};
-
-//template <typename T, typename... Tail>
-//struct gen_tuple_t<0, T, Tail...> {
-//  using type = std::tuple<Tail...>;
-//};
+#include <tuple>
+#include <unordered_map>
 
 template <size_t N, typename T>
 struct gen_tuple_t {
@@ -29,111 +17,133 @@ struct gen_tuple_t<1, T> {
   using type = std::tuple<T>;
 };
 
-//template <typename... Args>
-//auto t2a(Args... elems) {
-//  std::array<size_t, sizeof...(elems)> arr = {elems...};
-//  return arr;
-//}
-
 template<typename T, T default_val, size_t N>
 class matrix {
-  public:
-    using value_t = T;
-    using index_elem_t = size_t;
-    using index_t = typename gen_tuple_t<N, index_elem_t>::type;
-
-//    using ind_t = std::array<index_elem_t, N>;
-
-    // boost hash_combine.
-    index_elem_t hash_combine(index_elem_t elem, index_elem_t seed) {
-      return std::hash<index_elem_t>()(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-    }
-
-
+    using index_t = typename gen_tuple_t<N, size_t>::type;
 
     struct hash {
-      size_t operator()(const index_t& index) const {
+      template <size_t... Indices>
+      auto t2a(const index_t& tuple, std::index_sequence<Indices...>) const {
+        std::array<size_t, std::tuple_size<index_t>::value> arr{{std::get<Indices>(tuple)...}};
+        return arr;
+      }
+
+      size_t operator()(const index_t& tuple) const {
         size_t seed = 0;
-//        std::array<index_elem_t, N> arr = t2a<index_t>(index);
-//        for(auto it: arr)
-          return seed;
+        // boost hash_combine.
+        for(auto it: t2a(tuple, std::make_index_sequence<N>{}))
+          seed ^= std::hash<size_t>()(it) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        return seed;
       }
     };
 
-
     using storage_t = std::unordered_map<index_t, T, hash>;
 
-    using storage_ptr_t = std::weak_ptr<storage_t>;
-
-
-//    void set(const ind_t& index, const T& value) {
-//      storage_[index] = value;
-//    }
-
-//    T& get(const ind_t& index) {
-//      return storage_[index];
-//    }
-
-
-    template<typename F, index_elem_t ind>
+    template<typename F, size_t ind>
     class matrix_proxy {
       public:
-        matrix_proxy(storage_t& storage, const F& index) : matrix_storage_{storage}, index_{index} {
+        matrix_proxy(storage_t& storage, const F& index) : storage_{storage}, index_{index} {
         }
 
-        auto operator[](index_elem_t elem_ind) {
+        auto operator[](size_t elem_ind) {
           auto nextIndex = std::tuple_cat(index_, std::make_tuple(elem_ind));
-          return matrix_proxy<decltype(nextIndex), ind - 1>{matrix_storage_, nextIndex};
+          return matrix_proxy<decltype(nextIndex), ind - 1>{storage_, nextIndex};
         }
 
       private:
-        storage_t& matrix_storage_;
+        storage_t& storage_;
         F index_;
     };
-
 
     template<typename F>
     class matrix_proxy<F, 0> {
       public:
-        matrix_proxy(storage_t& storage, F& index) : matrix_storage_{storage}, index_{index} {
+        matrix_proxy(storage_t& storage, F& index) : storage_{storage}, index_{index} {
         }
 
-        auto& operator = (const value_t& value) {
-//          if(value == default_val) {
-//            auto it = matrix_storage_->erase(index_);
-//            return default_val;
-//          }
-          index_t ind{};
-          return matrix_storage_[ind] = value;
+        auto& operator = (const T& value) {
+          if(value == default_val) {
+            storage_.erase(index_);
+            return default_val_;
+          }
+          return storage_[index_] = value;
         }
 
-        operator const value_t& () const {
-//          auto it = matrix_storage_->find(index_);
-//          return it == matrix_storage_->cend() ? default_val : it->second;
-          auto ind = std::make_tuple<index_elem_t, index_elem_t>(0,0);
-          return matrix_storage_[ind];
+        operator const T& () const {
+          auto it = storage_.find(index_);
+          return it == storage_.cend() ? default_val_ : it->second;
         }
 
       private:
-        storage_t& matrix_storage_;
+        storage_t& storage_;
         F index_;
-        value_t tmp;
+        T default_val_{default_val};
     };
 
-    auto operator[] (index_elem_t elem_ind) {
+  public:
+
+    matrix() = default;
+
+//    explicit matrix(size_type size) : size_(size), capacity_(size) {
+//      storage_ = std::make_unique<storage_type>();
+//      data_ = storage_->allocate(size_);
+//      for(size_type i = 0; i < size_; ++i)
+//        storage_->construct(&data_[i]);
+//    }
+
+//    matrix(size_type size, T value) : size_(size), capacity_(size) {
+//      storage_ = std::make_unique<storage_type>();
+//      data_ = storage_->allocate(size_);
+//      for(size_type i = 0; i < size_; ++i)
+//        storage_->construct(&data_[i], value);
+//    }
+
+//    matrix(const std::initializer_list<T>& mat) : size_(mat.size()), capacity_(mat.size()) {
+//      storage_ = std::make_unique<storage_type>();
+//      data_ = storage_->allocate(size_);
+//      for(size_type i = 0; i < mat.size(); ++i)
+//        storage_->construct(&data_[i], *(mat.begin() + i));
+//    }
+
+    matrix(const matrix& mat) = default;
+
+    matrix(matrix&& mat) noexcept {
+      mat.swap(*this);
+    }
+
+    matrix& operator = (matrix const& mat) {
+      matrix<T, default_val, N> tmp(mat);
+      tmp.swap(*this);
+      return *this;
+    }
+
+    matrix& operator = (matrix&& mat) noexcept {
+      mat.swap(*this);
+      return *this;
+    }
+
+    ~matrix() = default;
+
+    void swap(matrix& other) {
+      std::swap(storage_, other.storage_);
+    }
+
+    auto operator[] (size_t elem_ind) {
       auto index = std::make_tuple(elem_ind);
       return matrix_proxy<decltype (index), N - 1>{storage_, index};
     }
 
-    auto operator[] (index_elem_t elem_ind) const {
+    auto operator[] (size_t elem_ind) const {
       auto index = std::make_tuple(elem_ind);
       return matrix_proxy<decltype (index), N - 1>{storage_, index};
+    }
+
+    size_t size() {
+      return storage_.size();
     }
 
   private:
-
     storage_t storage_{};
-
 };
 
 int main()
@@ -159,16 +169,20 @@ int main()
 //  std::cout << mat[1][2][3][4][5] << std::endl;
 
 
-  for (auto i = 0; i < 10; ++i) {
+  for(auto i = 0; i < 10; ++i) {
       mat[i][i] = i;
-      mat[i][i] = i;
+      mat[i][9 - i] = i;
   }
 
-  for (auto i = 1; i < 9; ++i) {
-      for (auto j = 1; j < 9; ++j)
+  ((mat[1][1] = 314) = 0) = 3;
+
+  for(auto i = 1; i < 9; ++i) {
+      for(auto j = 1; j < 9; ++j)
           std::cout << mat[i][j] << " ";
       std::cout << std::endl;
   }
+
+  std::cout << mat.size() << std::endl;
 
   return 0;
 }
