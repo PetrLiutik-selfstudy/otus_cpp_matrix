@@ -9,7 +9,9 @@ endif ()
 # Setup application
 add_executable(${PROJECT_NAME} main.cpp
         ver.cpp
-        ../inc/ver.h)
+        ../inc/matrix.h
+        ../inc/ver.h
+        ../inc/utils.h)
 
 configure_file(version.h.in ${PROJECT_SOURCE_DIR}/version.h)
 
