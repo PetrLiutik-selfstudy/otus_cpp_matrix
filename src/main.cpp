@@ -12,10 +12,10 @@ int main()
             << ver_patch() << std::endl;
 
 
-  using mat2_t = matrix<int, 0>;
+  using mat2_t = mat::matrix<int, 0>;
   mat2_t mat;
 
-  using mat3_t = matrix<int, 0, 3>;
+  using mat3_t = mat::matrix<int, 0, 3>;
   mat3_t mat1;
 
 ////  auto index = std::make_tuple<int, int>(1, 1);
@@ -27,6 +27,8 @@ int main()
 
   using tuple3_t = mat3_t::index_val_t;
   mat3_t mat2{tuple3_t(1, 2, 3, 4), tuple3_t(4, 3, 2, 1)};
+
+  mat3_t mat4(std::forward<decltype(mat2)>(mat2));
 
 ////  std::cout << mat.get(ind) << std::endl;
 //  std::cout << mat[1][2][3][4][5] << std::endl;
@@ -54,7 +56,7 @@ int main()
     std::cout << x << y << z << v << std::endl;
   }
 
-  for(auto it: mat2) {
+  for(auto it: mat4) {
     int x;
     int y;
     int z;

@@ -56,7 +56,7 @@ struct hash {
   }
 
   /**
-   * @brief Собственно само вычисление хэша (заимствованно из boost hash_combine).
+   * @brief Собственно само вычисление хэша (заимствовано из boost hash_combine).
    * @param tuple - кортеж.
    */
   size_t operator() (const T& tuple) const {
