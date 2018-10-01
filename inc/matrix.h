@@ -178,6 +178,24 @@ class matrix {
     }
 
     /**
+     * @brief Оператор равенства.
+     * @param other - другой объект матрицы.
+     * @return - true - объекты равны, false - объекты не равны.
+     */
+    bool operator == (const matrix &other) const {
+      return storage_ == other.storage_;
+    }
+
+    /**
+     * @brief Оператор неравенства.
+     * @param other - другой объект матрицы.
+     * @return - false - объекты равны, true - объекты не равны.
+     */
+    bool operator != (const matrix &other) const {
+      return !(*this == other);
+    }
+
+    /**
      * @brief Дать число занятых элементов матрицы.
      * @return число занятых элементов матрицы.
      */
@@ -220,11 +238,11 @@ class matrix {
           return std::tuple_cat((*current_).first, std::make_tuple((*current_).second));
         }
 
-        bool operator == (iterator &other) {
+        bool operator == (const iterator &other) const {
           return current_ == other.current_;
         }
 
-        bool operator != (iterator &other) {
+        bool operator != (const iterator &other) const {
           return !(*this == other);
         }
 
