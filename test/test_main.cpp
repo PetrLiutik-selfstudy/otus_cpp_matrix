@@ -44,19 +44,19 @@ TEST(matrix_test_case, matrix_copy_ctor_test) {
 }
 
 TEST(matrix_test_case, matrix_move_ctor_test) {
-/*  using mat_t = mat::matrix<int, 0>;
+  using mat_t = mat::matrix<int, 0>;
   mat_t mat1;
-  mat[0][0] = 100;
+  mat1[0][0] = 100;
   mat_t mat2(std::forward<decltype(mat1)>(mat1));
   
   EXPECT_EQ(mat2.size(), 1);
-  EXPECT_EQ(mat1[0][0], 100);
+  EXPECT_EQ(mat2[0][0], 100);
   EXPECT_EQ(mat1.size(), 0);
-  EXPECT_EQ(mat1[0][0], 0);*/
+  EXPECT_EQ(mat1[0][0], 0);
 }
 
 TEST(matrix_test_case, matrix_empty_val_test) {
-/*  using mat_t = mat::matrix<int, 0>;
+  using mat_t = mat::matrix<int, 0>;
   mat_t mat;
   EXPECT_EQ(mat[0][0], 0);
 
@@ -70,7 +70,7 @@ TEST(matrix_test_case, matrix_empty_val_test) {
 
   mat1[0][0] = 1;
   EXPECT_EQ(mat.size(), 0);
-  EXPECT_EQ(mat[0][0], 1);*/
+  EXPECT_EQ(mat[0][0], 1);
 }
 
 
