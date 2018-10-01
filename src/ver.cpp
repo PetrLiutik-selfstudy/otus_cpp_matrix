@@ -1,4 +1,4 @@
-#include "../inc/ver.h"
+﻿#include "../inc/ver.h"
 #include "version.h"
 
 int ver_major() {

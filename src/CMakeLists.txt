@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+﻿cmake_minimum_required(VERSION 3.2)
 
 if (DEFINED ENV{TRAVIS_BUILD_NUMBER})
     project(matrix VERSION 1.1.$ENV{TRAVIS_BUILD_NUMBER})

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 int ver_major();
 int ver_minor();

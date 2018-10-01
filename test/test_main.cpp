@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+﻿#include "gtest/gtest.h"
 #include "../inc/ver.h"
 
 TEST(ver_test_case, ver_major_test) {
