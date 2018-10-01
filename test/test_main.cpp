@@ -56,16 +56,16 @@ TEST(matrix_test_case, matrix_move_ctor_test) {
 }
 
 TEST(matrix_test_case, matrix_empty_val_test) {
-  using mat_t = mat::matrix<int, 0>;
-  mat_t mat;
-  EXPECT_EQ(mat[0][0], 0);
+  using mat0_t = mat::matrix<int, 0>;
+  mat0_t mat0;
+  EXPECT_EQ(mat0[0][0], 0);
 
-  mat[0][0] = 0;
-  EXPECT_EQ(mat.size(), 0);
-  EXPECT_EQ(mat[0][0], 0);
-  
-  using mat_1_t = mat::matrix<int, 1>;
-  mat_1_t mat1;
+  mat0[0][0] = 0;
+  EXPECT_EQ(mat0.size(), 0);
+  EXPECT_EQ(mat0[0][0], 0);
+
+  using mat1_t = mat::matrix<int, 1>;
+  mat1_t mat1;
   EXPECT_EQ(mat1[0][0], 1);
 
   mat1[0][0] = 1;
