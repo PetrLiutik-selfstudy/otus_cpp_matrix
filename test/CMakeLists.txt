@@ -6,7 +6,10 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIR})
 
 add_executable(${PROJECT_NAME} test_main.cpp
-                               ../src/ver.cpp)
+                               ../src/ver.cpp
+                               ../inc/matrix.h
+                               ../inc/ver.h
+                               ../inc/utils.h)
 
 set_target_properties(${PROJECT_NAME}  ${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 14
@@ -21,3 +24,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME} gtest pthread )
 
 add_test(ver_test_case ${PROJECT_NAME})
+add_test(matrix_test_case ${PROJECT_NAME})
