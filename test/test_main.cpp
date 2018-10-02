@@ -60,7 +60,7 @@ TEST(matrix_test_case, matrix_swap_test) {
   mat_t mat1;
   mat1[92][1] = 100;
   mat_t mat2;
-  mat1[1][92] = -100;
+  mat2[1][92] = -100;
   std::swap(mat1, mat2);
 
   EXPECT_EQ(mat2.size(), 1);
