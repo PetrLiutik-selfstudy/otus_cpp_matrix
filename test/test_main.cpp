@@ -160,6 +160,15 @@ TEST(utils_test_case, gen_tuple_test) {
   EXPECT_EQ(is_same, true);
 }
 
+TEST(utils_test_case, append_tuple_test) {
+  bool is_same = std::is_same<std::tuple<int, bool>,
+                              utils::append_tuple_t<std::tuple<int>, bool>::type>::value;
+  EXPECT_EQ(is_same, true);
+  is_same = std::is_same<std::tuple<int, int, int, int, int, bool>,
+                         utils::append_tuple_t<utils::gen_tuple_t<5, int>::type, bool>::type>::value;
+  EXPECT_EQ(is_same, true);
+}
+
 int main(int argc, char *argv[]) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
