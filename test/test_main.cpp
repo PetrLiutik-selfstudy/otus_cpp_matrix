@@ -1,6 +1,7 @@
 ﻿#include "gtest/gtest.h"
 #include "../inc/matrix.h"
 #include "../inc/ver.h"
+#include "../inc/utils.h"
 
 TEST(ver_test_case, ver_major_test) {
   EXPECT_GE(ver_major(), 1);
@@ -14,13 +15,13 @@ TEST(ver_test_case, ver_patch_test) {
   EXPECT_GE(ver_patch(), 1);
 }
 
-TEST(matrix_test_case, matrix_default_ctor_test) {
+TEST(matrix_test_case, default_ctor_test) {
   using mat_t = mat::matrix<int, 0>;
   mat_t mat;
   EXPECT_EQ(mat.size(), 0);
 }
 
-TEST(matrix_test_case, matrix_at_test) {
+TEST(matrix_test_case, at_test) {
   using mat_t = mat::matrix<int, 0>;
   mat_t mat;
 
@@ -33,7 +34,7 @@ TEST(matrix_test_case, matrix_at_test) {
   EXPECT_EQ(mat[5][101], 0);
 }
 
-TEST(matrix_test_case, matrix_copy_ctor_test) {
+TEST(matrix_test_case, copy_ctor_test) {
   using mat_t = mat::matrix<int, 0>;
   mat_t mat1;
   mat1[12][67] = 100;
@@ -43,7 +44,7 @@ TEST(matrix_test_case, matrix_copy_ctor_test) {
   EXPECT_EQ(mat2, mat1);
 }
 
-TEST(matrix_test_case, matrix_move_ctor_test) {
+TEST(matrix_test_case, move_ctor_test) {
   using mat_t = mat::matrix<int, 0>;
   mat_t mat1;
   mat1[92][1] = 100;
@@ -55,7 +56,7 @@ TEST(matrix_test_case, matrix_move_ctor_test) {
   EXPECT_EQ(mat1[92][1], 0);
 }
 
-TEST(matrix_test_case, matrix_swap_test) {
+TEST(matrix_test_case, swap_test) {
   using mat_t = mat::matrix<int, 0>;
   mat_t mat1;
   mat1[92][1] = 100;
@@ -69,7 +70,7 @@ TEST(matrix_test_case, matrix_swap_test) {
   EXPECT_EQ(mat1[1][92], -100);
 }
 
-TEST(matrix_test_case, matrix_empty_val_test) {
+TEST(matrix_test_case, empty_val_test) {
   using mat0_t = mat::matrix<int, 0>;
   mat0_t mat0;
   EXPECT_EQ(mat0[75][31], 0);
@@ -87,7 +88,7 @@ TEST(matrix_test_case, matrix_empty_val_test) {
   EXPECT_EQ(mat1[75][31], 1);
 }
 
-TEST(matrix_test_case, matrix_iter_test) {
+TEST(matrix_test_case, iter_test) {
   using mat_t = mat::matrix<int, 0>;
   mat_t mat;
   EXPECT_EQ(mat.begin(), mat.end());
@@ -121,7 +122,7 @@ TEST(matrix_test_case, matrix_iter_test) {
   EXPECT_EQ(mat.size(), size);
 }
 
-TEST(matrix_test_case, matrix_canonical_assignment_test) {
+TEST(matrix_test_case, canonical_assignment_test) {
   using mat_t = mat::matrix<int, 0>;
   mat_t mat;
 
@@ -130,7 +131,7 @@ TEST(matrix_test_case, matrix_canonical_assignment_test) {
   EXPECT_EQ(mat[78][56], - 21);
 }
 
-TEST(matrix_test_case, matrix_5_dimensions) {
+TEST(matrix_test_case, matrix_5_dimensions_test) {
   using mat_t = mat::matrix<int, 0, 5>;
   mat_t mat;
   EXPECT_EQ(mat.size(), 0);
@@ -148,6 +149,11 @@ TEST(matrix_test_case, matrix_5_dimensions) {
   EXPECT_EQ(x4, 4);
   EXPECT_EQ(x5, 5);
   EXPECT_EQ(v, 10);
+}
+
+TEST(utils_test_case, gen_tuple_test) {
+  EXPECT_EQ(true, std::is_same<std::tuple<int>, utils::gen_tuple_t<1, int>::type>::value);
+  EXPECT_EQ(true, std::is_same<std::tuple<int, int, int, int, int>, utils::gen_tuple_t<5, int>::type>::value);
 }
 
 int main(int argc, char *argv[]) {

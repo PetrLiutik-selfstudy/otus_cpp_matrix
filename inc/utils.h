@@ -12,7 +12,7 @@ namespace utils {
  */
 template <size_t N, typename T>
 struct gen_tuple_t {
-  using type = decltype(std::tuple_cat(std::declval<std::tuple<std::size_t>>(),
+  using type = decltype(std::tuple_cat(std::declval<std::tuple<T>>(),
                                        std::declval<typename gen_tuple_t<N - 1, T>::type>()));
 };
 
