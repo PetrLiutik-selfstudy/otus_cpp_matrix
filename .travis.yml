@@ -26,3 +26,20 @@ script:
   - cmake .
   - cmake --build .
   - cmake --build . --target test
+  - cmake --build . --target package
+  - doxygen Doxyfile
+
+deploy:
+  - provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    keep-history: true
+    local-dir: html
+    on:
+      branch: master
+  - provider: script
+    skip_cleanup: true
+    on:
+      branch: master
+    script:
+    - curl -T matrix-1.1.$TRAVIS_BUILD_NUMBER-Linux.deb -upetrljutik:$BINTRAY_API_KEY "https://api.bintray.com/content/petrljutik/matrix/matrix/$TRAVIS_BUILD_NUMBER/matrix-1.1.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
