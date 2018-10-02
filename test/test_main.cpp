@@ -121,6 +121,34 @@ TEST(matrix_test_case, matrix_iter_test) {
   EXPECT_EQ(mat.size(), size);
 }
 
+TEST(matrix_test_case, matrix_canonical_assignment_test) {
+  using mat_t = mat::matrix<int, 0>;
+  mat_t mat;
+
+  ((mat[78][56] = 231) = 0) = -21;
+  EXPECT_EQ(mat.size(), 1);
+  EXPECT_EQ(mat[78][56], - 21);
+}
+
+TEST(matrix_test_case, matrix_5_dimensions) {
+  using mat_t = mat::matrix<int, 0, 5>;
+  mat_t mat;
+  EXPECT_EQ(mat.size(), 0);
+  
+  mat[1][2][3][4][5] = 10;
+  EXPECT_EQ(mat.size(), 1);
+
+  size_t x1, x2, x3, x4, x5;
+  int v;
+  auto it = mat.begin();
+  std::tie(x1, x2, x3, x4, x5, v) = *it;
+  EXPECT_EQ(x1, 1);
+  EXPECT_EQ(x2, 2);
+  EXPECT_EQ(x3, 3);
+  EXPECT_EQ(x4, 4);
+  EXPECT_EQ(x5, 5);
+  EXPECT_EQ(v, 10);
+}
 
 int main(int argc, char *argv[]) {
   ::testing::InitGoogleTest(&argc, argv);

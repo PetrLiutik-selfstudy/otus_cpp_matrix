@@ -3,7 +3,6 @@
 #include "../inc/matrix.h"
 #include "../inc/ver.h"
 
-
 int main()
 {
   std::cout << "matrix version: "
@@ -31,8 +30,8 @@ int main()
   // Итерирование по матрице.
   std::cout << "Matrix iterating: " << std::endl;
   for(auto it: mat) {
-    int x;
-    int y;
+    size_t x;
+    size_t y;
     int v;
     std::tie(x, y, v) = it;
     std::cout << x << " " << y << " " << v << std::endl;
@@ -43,16 +42,15 @@ int main()
   std::cout << mat.size() << std::endl;
 
   // Оператор =.
-  std::cout << "Operator =: " << std::endl;
+  std::cout << "Canonical assignment: " << std::endl;
   ((mat[100][100] = 314) = 0) = 217;
   std::cout << mat[100][100] << std::endl;
-
 
 
   // 5-мерная матрица.
   using mat5d_t = mat::matrix<int, 0, 5>;
   mat5d_t mat1(mat5d_t::index_val_t(0, 0, 0, 0, 0, 777));
-  mat5d_t mat2{mat5d_t::index_val_t(1, 2, 3, 4, 5, 100), mat5d_t::index_val_t(5, 4, 3, 2, 1, -100)};
+  mat5d_t mat2{mat5d_t::index_val_t(1, 2, 3, 4, 5, 100), mat5d_t::index_val_t(1, 2, 3, 4, 6, -100)};
 
   std::swap(mat1, mat2);
 
@@ -63,11 +61,11 @@ int main()
   // Итерирование по матрице.
   std::cout << "Matrix5d iterating: " << std::endl;
   for(auto it: mat1) {
-    int x1;
-    int x2;
-    int x3;
-    int x4;
-    int x5;
+    size_t x1;
+    size_t x2;
+    size_t x3;
+    size_t x4;
+    size_t x5;
     int v;
     std::tie(x1, x2, x3, x4, x5, v) = it;
     std::cout << x1 << " " << x2 << " " << x3 << " " << x4 << " " << x5 << " " << v << std::endl;

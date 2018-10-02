@@ -14,6 +14,8 @@ namespace mat {
  */
 template<typename T, T empty_val, size_t N = 2>
 class matrix {
+    static_assert(N > 0, "Incorrect number of dimensions. Must be greater than 0.");
+
     /// Тип кортежа, содержащего все индексы матрицы.
     using index_t = typename utils::gen_tuple_t<N, size_t>::type;
     /// Тип хранилища элементов матрицы.
@@ -86,7 +88,7 @@ class matrix {
 
   public:
     /// Тип кортежа, содержащего все индексы и значение элемента матрицы.
-    using index_val_t = typename utils::gen_tuple_t<N + 1, size_t>::type;
+    using index_val_t = typename utils::append_tuple_t<index_t, T>::type;
 
     matrix() = default;
 
@@ -264,6 +266,22 @@ class matrix {
      */
     iterator end() {
       return iterator(storage_.end());
+    }
+
+    /**
+     * @brief Дать реверсный итератор на начало матрицы.
+     * @return реверсный итератор на начало матрицы.
+     */
+    iterator rbegin() {
+      return iterator(storage_.rbegin());
+    }
+
+    /**
+     * @brief Дать реверсный итератор на конец матрицы.
+     * @return реверсный итератор на конец матрицы.
+     */
+    iterator rend() {
+      return iterator(storage_.rend());
     }
 
   private:

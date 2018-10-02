@@ -6,7 +6,7 @@
 namespace utils {
 
 /**
- * @brief Генерация гомогенного кортежа, содержащего N элементов типа T.
+ * @brief Генерация типа гомогенного кортежа, содержащего N элементов типа T.
  * @tparam N - размер кортежа.
  * @tparam T - тип элементов.
  */
@@ -17,12 +17,22 @@ struct gen_tuple_t {
 };
 
 /**
- * @brief Генерация гомогенного кортежа, содержащего N элементов типа T (конец рекурсии).
+ * @brief Генерация типа гомогенного кортежа, содержащего N элементов типа T (конец рекурсии).
  * @tparam T - тип элементов.
  */
 template<typename T>
 struct gen_tuple_t<1, T> {
   using type = std::tuple<T>;
+};
+
+/**
+ * @brief Генерация типа кортежа при добавлении элемента в конец кортежа.
+ * @tparam T - тип кортежа.
+ * @tparam U - тип добавляемого элемента.
+ */
+template<typename T, typename U>
+struct append_tuple_t {
+  using type = decltype(std::tuple_cat(std::declval<T>(), std::declval<std::tuple<U>>()));
 };
 
 /**
