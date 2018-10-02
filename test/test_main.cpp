@@ -152,8 +152,12 @@ TEST(matrix_test_case, matrix_5_dimensions_test) {
 }
 
 TEST(utils_test_case, gen_tuple_test) {
-  EXPECT_EQ(true, std::is_same<std::tuple<int>, utils::gen_tuple_t<1, int>::type>::value);
-  EXPECT_EQ(true, std::is_same<std::tuple<int, int, int, int, int>, utils::gen_tuple_t<5, int>::type>::value);
+  bool is_same = std::is_same<std::tuple<int>,
+                              utils::gen_tuple_t<1, int>::type>::value;
+  EXPECT_EQ(is_same, true);
+  is_same = std::is_same<std::tuple<int, int, int, int, int>,
+                         utils::gen_tuple_t<5, int>::type>::value;
+  EXPECT_EQ(is_same, true);
 }
 
 int main(int argc, char *argv[]) {
