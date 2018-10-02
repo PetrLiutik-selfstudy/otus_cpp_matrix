@@ -169,6 +169,19 @@ TEST(utils_test_case, append_tuple_test) {
   EXPECT_EQ(is_same, true);
 }
 
+TEST(utils_test_case, get_subtuple_test) {
+  auto tuple = std::make_tuple<int, int, int, int, bool>(1, 2, 3, 4, true);
+
+  auto subtuple = utils::get_subtuple(tuple, std::make_index_sequence<3>{});
+  EXPECT_EQ(std::get<0>(subtuple), 1);
+  EXPECT_EQ(std::get<1>(subtuple), 2);
+  EXPECT_EQ(std::get<2>(subtuple), 3);
+
+  bool is_same = std::is_same<std::tuple<int, int, int>, decltype(subtuple)>::value;
+
+  EXPECT_EQ(is_same, true);
+}
+
 int main(int argc, char *argv[]) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
